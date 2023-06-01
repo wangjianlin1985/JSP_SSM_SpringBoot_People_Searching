@@ -1,0 +1,52 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.FindPersonMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加寻人信息记录 -->
+	<insert id="addFindPerson" parameterType="findPerson">
+		insert into t_findPerson(personName,sex,personPhoto,bloodType,nativePlaceObj,findTypeObj,lostTypeObj,bornDate,lostDate,lostHeight,lostPlace,personDesc,connectPerson,connectPhone,email,connectAddress,postcode,otherWay,memo,userObj,addTime) values 
+		(#{personName},#{sex},#{personPhoto},#{bloodType},#{nativePlaceObj.placeId},#{findTypeObj.findTypeId},#{lostTypeObj.lostTypeId},#{bornDate},#{lostDate},#{lostHeight},#{lostPlace},#{personDesc},#{connectPerson},#{connectPhone},#{email},#{connectAddress},#{postcode},#{otherWay},#{memo},#{userObj.user_name},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询寻人信息记录 -->
+	<select id="queryFindPerson" resultMap="findPersonMap" >
+		select t_findPerson.* from t_findPerson,t_findType,t_lostType,t_nativePlace,t_userInfo ${where} and t_findPerson.nativePlaceObj = t_nativePlace.placeId and t_findPerson.findTypeObj = t_findType.findTypeId and t_findPerson.lostTypeObj = t_lostType.lostTypeId and t_findPerson.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="findPersonMap" type="findPerson">
+        <id property="findPersonId" column="findPersonId" />
+        <association property="nativePlaceObj" column="nativePlaceObj" select="com.chengxusheji.mapper.NativePlaceMapper.getNativePlace" />
+        <association property="findTypeObj" column="findTypeObj" select="com.chengxusheji.mapper.FindTypeMapper.getFindType" />
+        <association property="lostTypeObj" column="lostTypeObj" select="com.chengxusheji.mapper.LostTypeMapper.getLostType" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有寻人信息记录 -->
+	<select id="queryFindPersonList" resultMap="findPersonMap" >
+		select t_findPerson.* from t_findPerson,t_findType,t_lostType,t_nativePlace,t_userInfo ${where} and t_findPerson.nativePlaceObj = t_nativePlace.placeId and t_findPerson.findTypeObj = t_findType.findTypeId and t_findPerson.lostTypeObj = t_lostType.lostTypeId and t_findPerson.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的寻人信息记录数 -->
+	<select id="queryFindPersonCount" resultType="int">
+		select count(*) from t_findPerson,t_findType,t_lostType,t_nativePlace,t_userInfo ${where} and t_findPerson.nativePlaceObj = t_nativePlace.placeId and t_findPerson.findTypeObj = t_findType.findTypeId and t_findPerson.lostTypeObj = t_lostType.lostTypeId and t_findPerson.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个寻人信息记录 -->
+	<select id="getFindPerson" parameterType="int" resultMap="findPersonMap">
+		select * from t_findPerson where t_findPerson.findPersonId = #{findPersonId}
+	</select>
+
+	<!-- 更新寻人信息记录 -->
+	<update id="updateFindPerson" parameterType="findPerson">
+		update t_findPerson set personName=#{personName},sex=#{sex},personPhoto=#{personPhoto},bloodType=#{bloodType},nativePlaceObj=#{nativePlaceObj.placeId},findTypeObj=#{findTypeObj.findTypeId},lostTypeObj=#{lostTypeObj.lostTypeId},bornDate=#{bornDate},lostDate=#{lostDate},lostHeight=#{lostHeight},lostPlace=#{lostPlace},personDesc=#{personDesc},connectPerson=#{connectPerson},connectPhone=#{connectPhone},email=#{email},connectAddress=#{connectAddress},postcode=#{postcode},otherWay=#{otherWay},memo=#{memo},userObj=#{userObj.user_name},addTime=#{addTime} where findPersonId = #{findPersonId}
+	</update>
+
+	<!-- 删除寻人信息记录 -->
+	<delete id="deleteFindPerson" parameterType="int">
+		delete from t_findPerson where findPersonId=#{findPersonId}
+	</delete>
+
+</mapper>

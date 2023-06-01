@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.NativePlaceMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加籍贯记录 -->
+	<insert id="addNativePlace" parameterType="nativePlace">
+		insert into t_nativePlace(placeName) values 
+		(#{placeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询籍贯记录 -->
+	<select id="queryNativePlace" resultMap="nativePlaceMap" >
+		select t_nativePlace.* from t_nativePlace ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="nativePlaceMap" type="nativePlace">
+        <id property="placeId" column="placeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有籍贯记录 -->
+	<select id="queryNativePlaceList" resultMap="nativePlaceMap" >
+		select t_nativePlace.* from t_nativePlace ${where}
+	</select>
+
+    <!-- 按照查询条件的籍贯记录数 -->
+	<select id="queryNativePlaceCount" resultType="int">
+		select count(*) from t_nativePlace ${where}
+	</select>
+
+	<!-- 根据主键查询某个籍贯记录 -->
+	<select id="getNativePlace" parameterType="int" resultMap="nativePlaceMap">
+		select * from t_nativePlace where t_nativePlace.placeId = #{placeId}
+	</select>
+
+	<!-- 更新籍贯记录 -->
+	<update id="updateNativePlace" parameterType="nativePlace">
+		update t_nativePlace set placeName=#{placeName} where placeId = #{placeId}
+	</update>
+
+	<!-- 删除籍贯记录 -->
+	<delete id="deleteNativePlace" parameterType="int">
+		delete from t_nativePlace where placeId=#{placeId}
+	</delete>
+
+</mapper>

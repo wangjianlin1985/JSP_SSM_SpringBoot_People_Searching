@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.LostTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加失踪类型记录 -->
+	<insert id="addLostType" parameterType="lostType">
+		insert into t_lostType(lostTypeName) values 
+		(#{lostTypeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询失踪类型记录 -->
+	<select id="queryLostType" resultMap="lostTypeMap" >
+		select t_lostType.* from t_lostType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="lostTypeMap" type="lostType">
+        <id property="lostTypeId" column="lostTypeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有失踪类型记录 -->
+	<select id="queryLostTypeList" resultMap="lostTypeMap" >
+		select t_lostType.* from t_lostType ${where}
+	</select>
+
+    <!-- 按照查询条件的失踪类型记录数 -->
+	<select id="queryLostTypeCount" resultType="int">
+		select count(*) from t_lostType ${where}
+	</select>
+
+	<!-- 根据主键查询某个失踪类型记录 -->
+	<select id="getLostType" parameterType="int" resultMap="lostTypeMap">
+		select * from t_lostType where t_lostType.lostTypeId = #{lostTypeId}
+	</select>
+
+	<!-- 更新失踪类型记录 -->
+	<update id="updateLostType" parameterType="lostType">
+		update t_lostType set lostTypeName=#{lostTypeName} where lostTypeId = #{lostTypeId}
+	</update>
+
+	<!-- 删除失踪类型记录 -->
+	<delete id="deleteLostType" parameterType="int">
+		delete from t_lostType where lostTypeId=#{lostTypeId}
+	</delete>
+
+</mapper>

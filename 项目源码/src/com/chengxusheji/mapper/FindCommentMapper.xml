@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.FindCommentMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加评论记录 -->
+	<insert id="addFindComment" parameterType="findComment">
+		insert into t_findComment(findPersonObj,content,userObj,commentTime) values 
+		(#{findPersonObj.findPersonId},#{content},#{userObj.user_name},#{commentTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询评论记录 -->
+	<select id="queryFindComment" resultMap="findCommentMap" >
+		select t_findComment.* from t_findComment,t_findPerson,t_userInfo ${where} and t_findComment.findPersonObj = t_findPerson.findPersonId and t_findComment.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="findCommentMap" type="findComment">
+        <id property="commentId" column="commentId" />
+        <association property="findPersonObj" column="findPersonObj" select="com.chengxusheji.mapper.FindPersonMapper.getFindPerson" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有评论记录 -->
+	<select id="queryFindCommentList" resultMap="findCommentMap" >
+		select t_findComment.* from t_findComment,t_findPerson,t_userInfo ${where} and t_findComment.findPersonObj = t_findPerson.findPersonId and t_findComment.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的评论记录数 -->
+	<select id="queryFindCommentCount" resultType="int">
+		select count(*) from t_findComment,t_findPerson,t_userInfo ${where} and t_findComment.findPersonObj = t_findPerson.findPersonId and t_findComment.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个评论记录 -->
+	<select id="getFindComment" parameterType="int" resultMap="findCommentMap">
+		select * from t_findComment where t_findComment.commentId = #{commentId}
+	</select>
+
+	<!-- 更新评论记录 -->
+	<update id="updateFindComment" parameterType="findComment">
+		update t_findComment set findPersonObj=#{findPersonObj.findPersonId},content=#{content},userObj=#{userObj.user_name},commentTime=#{commentTime} where commentId = #{commentId}
+	</update>
+
+	<!-- 删除评论记录 -->
+	<delete id="deleteFindComment" parameterType="int">
+		delete from t_findComment where commentId=#{commentId}
+	</delete>
+
+</mapper>
